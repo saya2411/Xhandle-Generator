@@ -3,12 +3,12 @@ import { getInitialUndergroundPool } from "../data/undergroundDictionary";
 import { logger } from "./logger";
 
 const STORAGE_KEYS = {
-  FAVORITES: "voidtag_favorites_v8",
-  HISTORY: "voidtag_history_v8",
-  VERIFY_CACHE: "voidtag_verify_cache_v8",
-  OFFLINE_POOL: "voidtag_offline_pool_v12",
-  A11Y_PREFS: "voidtag_a11y_prefs_v8",
-  SYNC_QUEUE: "voidtag_sync_queue_v8",
+  FAVORITES: "xhandle_favorites_v1",
+  HISTORY: "xhandle_history_v1",
+  VERIFY_CACHE: "xhandle_verify_cache_v1",
+  OFFLINE_POOL: "xhandle_offline_pool_v1",
+  A11Y_PREFS: "xhandle_a11y_prefs_v1",
+  SYNC_QUEUE: "xhandle_sync_queue_v1",
 };
 
 // In-memory fallback in case localStorage is disabled/sandboxed
@@ -62,7 +62,8 @@ export function saveAccessibilitySettings(settings: AccessibilitySettings): void
 
 // 2. Favorites / Stash
 export function loadFavorites(): HandleItem[] {
-  const data = safeGetItem(STORAGE_KEYS.FAVORITES) || safeGetItem("voidtag_favorites_v4") || safeGetItem("voidtag_favorites_v3");
+  // Check active storage key, with migration fallback for any legacy favorites
+  const data = safeGetItem(STORAGE_KEYS.FAVORITES) || safeGetItem("voidtag_favorites_v8") || safeGetItem("voidtag_favorites_v4");
   if (data) {
     try {
       const parsed: HandleItem[] = JSON.parse(data);

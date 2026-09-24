@@ -1,6 +1,6 @@
 # Xhandle Generator
 
-VoidTag is a minimalist, aesthetic underground handle generator and availability verification engine designed for X (Twitter). It features subterranean subculture categories (Void & Noir, Dark & Edgy, Cyber Occult, and Leet Numeric Ciphers), offline-first caching, and real-time handle verification.
+Xhandle Generator is a minimalist, aesthetic underground handle generator and availability verification engine designed for X (Twitter). It features subterranean subculture categories (Void & Noir, Dark & Edgy, Cyber Occult, and Leet Numeric Ciphers), offline-first caching, and real-time handle verification.
 
 ---
 
@@ -26,10 +26,10 @@ Visit `http://localhost:3000` in your browser.
 ```bash
 git init
 git add .
-git commit -m "Initial commit: VoidTag Underground Handle Engine"
+git commit -m "Initial commit: Xhandle Generator"
 ```
 
-3. Create a new repository on [GitHub](https://github.com/new).
+3. Create a new repository on [GitHub](https://github.com/new) (e.g. `xhandle-generator`).
 4. Link and push your repository:
 
 ```bash
