@@ -15,7 +15,7 @@ export const ShortcutsModal: React.FC<ShortcutsModalProps> = ({ isOpen, onClose 
     { key: "Space or Enter", action: "Cycle to next unique handle" },
     { key: "C", action: "Copy current @handle to clipboard" },
     { key: "S", action: "Save or remove current handle in stash" },
-    { key: "X", action: "Run live availability check on X" },
+    { key: "X", action: "Open handle profile directly on x.com" },
     { key: "B", action: "Open offline stash drawer" },
     { key: "Esc", action: "Close active drawer / modal" },
   ];

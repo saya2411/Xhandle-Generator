@@ -35,7 +35,6 @@ function MainApp() {
   const [favorites, setFavorites] = useState<HandleItem[]>(loadFavorites);
   const [history, setHistory] = useState<HandleItem[]>(loadHistory);
   const [hasCopied, setHasCopied] = useState(false);
-  const [isCheckingExistence, setIsCheckingExistence] = useState(false);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
 
   // Track shown handles during the session to enforce strictly non-repeating unique cycles
@@ -117,71 +116,6 @@ function MainApp() {
       }
     }
   }, [filteredPool, currentHandle, selectedVibe]);
-
-  // Check existence function with offline-first cache
-  const checkHandleExistence = useCallback(
-    async (handleText: string) => {
-      const cleanHandle = handleText.replace(/^@+/, "").trim();
-      setIsCheckingExistence(true);
-
-      // Check offline cache first
-      const cached = getCachedVerification(cleanHandle);
-      if (cached) {
-        logger.info(`Found cached verification for @${cleanHandle}: ${cached.status}`);
-        setCurrentHandle((prev) =>
-          prev && prev.text.toLowerCase() === cleanHandle.toLowerCase()
-            ? { ...prev, status: cached.status, statusMessage: cached.message, statusCheckedAt: cached.checkedAt }
-            : prev
-        );
-        setIsCheckingExistence(false);
-        return;
-      }
-
-      // If offline, queue and report offline unknown status
-      if (!effectiveOnline) {
-        logger.warn(`Device offline. Queuing verification for @${cleanHandle}`);
-        addToSyncQueue(cleanHandle);
-        setPendingQueue(getSyncQueue());
-        setCurrentHandle((prev) =>
-          prev && prev.text.toLowerCase() === cleanHandle.toLowerCase()
-            ? { ...prev, status: "unknown", statusMessage: "Offline cache: verification queued for reconnect." }
-            : prev
-        );
-        setIsCheckingExistence(false);
-        return;
-      }
-
-      // Online verification via server endpoint
-      try {
-        const response = await fetch(`/api/check-handle/${encodeURIComponent(cleanHandle)}`);
-        if (!response.ok) {
-          throw new Error(`Server returned HTTP ${response.status}`);
-        }
-        const data: CheckStatusResult = await response.json();
-
-        // Save result in local cache
-        setCachedVerification(data);
-
-        setCurrentHandle((prev) =>
-          prev && prev.text.toLowerCase() === cleanHandle.toLowerCase()
-            ? { ...prev, status: data.status, statusMessage: data.message, statusCheckedAt: data.checkedAt }
-            : prev
-        );
-        logger.info(`Live verification completed for @${cleanHandle}: ${data.status}`);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "Network error";
-        logger.error(`Failed to verify @${cleanHandle}`, { error: msg });
-        setCurrentHandle((prev) =>
-          prev && prev.text.toLowerCase() === cleanHandle.toLowerCase()
-            ? { ...prev, status: "unknown", statusMessage: "Network timed out. Direct link to X available." }
-            : prev
-        );
-      } finally {
-        setIsCheckingExistence(false);
-      }
-    },
-    [effectiveOnline]
-  );
 
   // Background AI generation using Gemini endpoint (strictly subterranean & unique)
   const triggerBackgroundAISynthesis = async (vibe: VibeCategory) => {
@@ -411,7 +345,8 @@ function MainApp() {
         }
       } else if (e.key === "x" || e.key === "X") {
         if (currentHandle) {
-          checkHandleExistence(currentHandle.text);
+          const clean = currentHandle.text.replace(/_/g, "");
+          window.open(`https://x.com/${encodeURIComponent(clean)}`, "_blank", "noopener,noreferrer");
         }
       } else if (e.key === "b" || e.key === "B") {
         setIsStashOpen((prev) => !prev);
@@ -485,27 +420,24 @@ function MainApp() {
             setSelectedVibe(vibe);
             logger.info(`Selected vibe filter: ${vibe}`);
           }}
-          disabled={isCheckingExistence}
+          disabled={false}
         />
 
         {/* Central Handle Display Card */}
         <View className="w-full my-3">
           <HandleCard
             handle={currentHandle}
-            onCheckExistence={checkHandleExistence}
-            isCheckingExistence={isCheckingExistence}
             onToggleFavorite={handleToggleFavorite}
             isFavorite={isCurrentFavorite}
             onCopyHandle={handleCopyHandle}
             hasCopied={hasCopied}
-            isOnline={effectiveOnline}
           />
         </View>
 
         {/* Single-Click Cycling Control */}
         <CycleButton
           onCycle={cycleHandle}
-          isLoading={isCheckingExistence}
+          isLoading={false}
           isOffline={!effectiveOnline}
         />
 

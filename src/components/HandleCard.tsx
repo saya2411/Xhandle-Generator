@@ -7,27 +7,20 @@ import { logger } from "../utils/logger";
 
 interface HandleCardProps {
   handle: HandleItem | null;
-  onCheckExistence: (handleText: string) => void;
-  isCheckingExistence: boolean;
   onToggleFavorite: (handle: HandleItem) => void;
   isFavorite: boolean;
   onCopyHandle: (text: string) => void;
   hasCopied: boolean;
-  isOnline: boolean;
 }
 
 export const HandleCard: React.FC<HandleCardProps> = ({
   handle,
-  onCheckExistence,
-  isCheckingExistence,
   onToggleFavorite,
   isFavorite,
   onCopyHandle,
   hasCopied,
-  isOnline: _isOnline,
 }) => {
   const [localFeedback, setLocalFeedback] = useState<string | null>(null);
-  const [checkedForHandle, setCheckedForHandle] = useState<string | null>(null);
 
   if (!handle) {
     return (
@@ -71,24 +64,6 @@ export const HandleCard: React.FC<HandleCardProps> = ({
     window.open(intentUrl, "_blank", "noopener,noreferrer");
   };
 
-  const isCheckedForCurrentHandle =
-    (checkedForHandle === handleText || handle.status === "available" || handle.status === "taken") &&
-    handle.status !== "unchecked";
-
-  const isAvailable = isCheckedForCurrentHandle && handle.status === "available";
-  const isLikelyInUse = isCheckedForCurrentHandle && !isAvailable;
-
-  const handleCheckClick = () => {
-    if (isCheckingExistence) return;
-    if (isCheckedForCurrentHandle) {
-      // If already checked, clicking opens directly on X to view or claim
-      handleDirectXLink();
-      return;
-    }
-    setCheckedForHandle(handleText);
-    onCheckExistence(handleText);
-  };
-
   return (
     <View
       accessibilityRole="region"
@@ -129,52 +104,15 @@ export const HandleCard: React.FC<HandleCardProps> = ({
       </View>
 
       {/* Main Handle Display */}
-      <View className="py-6 sm:py-8 items-center justify-center text-center">
+      <View className="py-7 sm:py-9 items-center justify-center text-center">
         <Text
-          baseSize={32}
+          baseSize={34}
           accessibilityRole="header"
           accessibilityLiveRegion="polite"
           className="text-neutral-100 font-mono font-bold tracking-tight select-all break-all text-center"
         >
           @{handleText}
         </Text>
-
-        {/* Dynamic Check Availability Button: says 'Check Availability' initially, and 'Available' or 'Likely in use' once clicked */}
-        <View className="mt-4 flex-row items-center justify-center">
-          <Pressable
-            id="check-existence-btn"
-            onPress={handleCheckClick}
-            disabled={isCheckingExistence}
-            accessibilityLabel={
-              isCheckingExistence
-                ? "Checking handle availability on X"
-                : isAvailable
-                ? `Handle @${handleText} is Available. Click to open on X.`
-                : isLikelyInUse
-                ? `Handle @${handleText} is Likely in use. Click to verify on X.`
-                : `Check if @${handleText} is available on X`
-            }
-            className={`px-4 py-1.5 rounded-full border transition-colors inline-flex items-center justify-center min-h-[32px] cursor-pointer ${
-              isCheckingExistence
-                ? "bg-neutral-900 border-neutral-700 text-neutral-400 cursor-wait"
-                : isAvailable
-                ? "bg-emerald-950/60 border-emerald-600 text-emerald-300 hover:border-emerald-500 hover:bg-emerald-900/70"
-                : isLikelyInUse
-                ? "bg-rose-950/60 border-rose-700 text-rose-300 hover:border-rose-600 hover:bg-rose-900/70"
-                : "bg-neutral-900 border-neutral-750 text-neutral-300 hover:border-neutral-600 hover:text-neutral-100"
-            }`}
-          >
-            <span className="text-xs font-mono select-none font-semibold">
-              {isCheckingExistence
-                ? "Checking..."
-                : isAvailable
-                ? "Available"
-                : isLikelyInUse
-                ? "Likely in use"
-                : "Check Availability"}
-            </span>
-          </Pressable>
-        </View>
       </View>
 
       {/* Action Toolbar - Words only, no icons */}
