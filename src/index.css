@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+:root {
+  --app-font-scale: 1;
+  color-scheme: dark;
+}
+
+html, body {
+  background-color: #050505;
+  color: #f4f4f5;
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Accessible High Contrast Mode */
+.high-contrast-mode {
+  --tw-border-opacity: 1 !important;
+}
+
+.high-contrast-mode button:focus-visible,
+.high-contrast-mode [role="button"]:focus-visible {
+  outline: 2px solid #71717a !important;
+  outline-offset: 2px !important;
+}
+
+/* Custom subtle scrollbar for underground terminal */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}

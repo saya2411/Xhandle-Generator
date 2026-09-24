@@ -1,0 +1,6 @@
+{
+  "name": "VoidTag",
+  "description": "Minimalist underground & chaotic unique X handle engine with offline cache and live availability verification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
