@@ -9,6 +9,7 @@ import { SavedStashDrawer } from "./components/SavedStashDrawer";
 import { ShortcutsModal } from "./components/ShortcutsModal";
 import { AccessibilityBar } from "./components/AccessibilityBar";
 import { NetworkStatusBadge } from "./components/NetworkStatusBadge";
+import { GradientPointerAndShapes } from "./components/GradientPointerAndShapes";
 import { AccessibilityProvider } from "./context/AccessibilityContext";
 import { VibeCategory, HandleItem } from "./types";
 import { synthesizeDynamicHandle } from "./data/undergroundDictionary";
@@ -29,6 +30,7 @@ function MainApp() {
   const [favorites, setFavorites] = useState<HandleItem[]>(loadFavorites);
   const [, setHistory] = useState<HandleItem[]>(loadHistory);
   const [hasCopied, setHasCopied] = useState(false);
+  const [isCycling, setIsCycling] = useState(false);
 
   // Modals & Drawers
   const [isStashOpen, setIsStashOpen] = useState(false);
@@ -75,74 +77,80 @@ function MainApp() {
     }
   }, [filteredPool, currentHandle, selectedVibe]);
 
-  // Single-click cycle handle with strict uniqueness and zero external API dependencies
+  // Single-click cycle handle with moving cyclist animation
   const cycleHandle = useCallback(() => {
-    if (filteredPool.length === 0) return;
+    if (filteredPool.length === 0 || isCycling) return;
 
-    // Filter out handles seen this session to ensure fresh uniqueness
-    const unseen = filteredPool.filter(
-      (h) => !seenThisSessionRef.current.has(h.text.toLowerCase()) && (!currentHandle || h.text !== currentHandle.text)
-    );
+    setIsCycling(true);
 
-    let nextHandle: HandleItem;
+    // Provide a crisp 420ms cycle transition for the animated cyclist to roll smoothly
+    setTimeout(() => {
+      // Filter out handles seen this session to ensure fresh uniqueness
+      const unseen = filteredPool.filter(
+        (h) => !seenThisSessionRef.current.has(h.text.toLowerCase()) && (!currentHandle || h.text !== currentHandle.text)
+      );
 
-    // Synthesize fresh rare handles dynamically with 60% probability or whenever unseen handles are low
-    const shouldSynthesizeDynamic = Math.random() < 0.60 || unseen.length <= 4;
-    if (shouldSynthesizeDynamic) {
-      let synthText = synthesizeDynamicHandle(selectedVibe);
-      // Guarantee it has not been seen in this session
-      for (let attempt = 0; attempt < 15 && seenThisSessionRef.current.has(synthText.toLowerCase()); attempt++) {
-        synthText = synthesizeDynamicHandle(selectedVibe);
+      let nextHandle: HandleItem;
+
+      // Synthesize fresh rare handles dynamically with 60% probability or whenever unseen handles are low
+      const shouldSynthesizeDynamic = Math.random() < 0.60 || unseen.length <= 4;
+      if (shouldSynthesizeDynamic) {
+        let synthText = synthesizeDynamicHandle(selectedVibe);
+        // Guarantee it has not been seen in this session
+        for (let attempt = 0; attempt < 15 && seenThisSessionRef.current.has(synthText.toLowerCase()); attempt++) {
+          synthText = synthesizeDynamicHandle(selectedVibe);
+        }
+        const isNumeric = selectedVibe === "numeric" || (selectedVibe === "all" && /\d/.test(synthText));
+        const targetCat: VibeCategory = selectedVibe === "all" ? (isNumeric ? "numeric" : "void") : selectedVibe;
+
+        const newHandleItem: HandleItem = {
+          id: `synth_${Date.now()}_${synthText}`,
+          text: synthText,
+          category: targetCat,
+          addedAt: Date.now(),
+        };
+
+        // Add to session and offline pool if not already present
+        const existingInPool = uniquePool.some((h) => h.text.toLowerCase() === synthText.toLowerCase());
+        if (!existingInPool) {
+          appendToOfflinePool([newHandleItem]);
+          setOfflinePool(loadOfflinePool());
+        }
+
+        nextHandle = newHandleItem;
+        seenThisSessionRef.current.add(synthText.toLowerCase());
+      } else if (unseen.length > 0) {
+        nextHandle = unseen[Math.floor(Math.random() * unseen.length)];
+        seenThisSessionRef.current.add(nextHandle.text.toLowerCase());
+      } else {
+        // If all handles in this category have been seen, synthesize a fresh handle to ensure zero stale repeats
+        let synthText = synthesizeDynamicHandle(selectedVibe);
+        for (let attempt = 0; attempt < 15 && seenThisSessionRef.current.has(synthText.toLowerCase()); attempt++) {
+          synthText = synthesizeDynamicHandle(selectedVibe);
+        }
+        const isNumeric = selectedVibe === "numeric" || (selectedVibe === "all" && /\d/.test(synthText));
+        const targetCat: VibeCategory = selectedVibe === "all" ? (isNumeric ? "numeric" : "void") : selectedVibe;
+        nextHandle = {
+          id: `synth_${Date.now()}_${synthText}`,
+          text: synthText,
+          category: targetCat,
+          addedAt: Date.now(),
+        };
+        seenThisSessionRef.current.add(synthText.toLowerCase());
       }
-      const isNumeric = selectedVibe === "numeric" || (selectedVibe === "all" && /\d/.test(synthText));
-      const targetCat: VibeCategory = selectedVibe === "all" ? (isNumeric ? "numeric" : "void") : selectedVibe;
 
-      const newHandleItem: HandleItem = {
-        id: `synth_${Date.now()}_${synthText}`,
-        text: synthText,
-        category: targetCat,
-        addedAt: Date.now(),
-      };
+      setCurrentHandle(nextHandle);
+      setHasCopied(false);
+      setIsCycling(false);
 
-      // Add to session and offline pool if not already present
-      const existingInPool = uniquePool.some((h) => h.text.toLowerCase() === synthText.toLowerCase());
-      if (!existingInPool) {
-        appendToOfflinePool([newHandleItem]);
-        setOfflinePool(loadOfflinePool());
-      }
-
-      nextHandle = newHandleItem;
-      seenThisSessionRef.current.add(synthText.toLowerCase());
-    } else if (unseen.length > 0) {
-      nextHandle = unseen[Math.floor(Math.random() * unseen.length)];
-      seenThisSessionRef.current.add(nextHandle.text.toLowerCase());
-    } else {
-      // If all handles in this category have been seen, synthesize a fresh handle to ensure zero stale repeats
-      let synthText = synthesizeDynamicHandle(selectedVibe);
-      for (let attempt = 0; attempt < 15 && seenThisSessionRef.current.has(synthText.toLowerCase()); attempt++) {
-        synthText = synthesizeDynamicHandle(selectedVibe);
-      }
-      const isNumeric = selectedVibe === "numeric" || (selectedVibe === "all" && /\d/.test(synthText));
-      const targetCat: VibeCategory = selectedVibe === "all" ? (isNumeric ? "numeric" : "void") : selectedVibe;
-      nextHandle = {
-        id: `synth_${Date.now()}_${synthText}`,
-        text: synthText,
-        category: targetCat,
-        addedAt: Date.now(),
-      };
-      seenThisSessionRef.current.add(synthText.toLowerCase());
-    }
-
-    setCurrentHandle(nextHandle);
-    setHasCopied(false);
-
-    // Save to history (deduplicated)
-    setHistory((prev) => {
-      const updated = [nextHandle, ...prev.filter((h) => h.text !== nextHandle.text)].slice(0, 50);
-      saveHistory(updated);
-      return updated;
-    });
-  }, [filteredPool, currentHandle, selectedVibe, uniquePool]);
+      // Save to history (deduplicated)
+      setHistory((prev) => {
+        const updated = [nextHandle, ...prev.filter((h) => h.text !== nextHandle.text)].slice(0, 50);
+        saveHistory(updated);
+        return updated;
+      });
+    }, 420);
+  }, [filteredPool, currentHandle, selectedVibe, uniquePool, isCycling]);
 
   // Toggle favorite
   const handleToggleFavorite = (handle: HandleItem) => {
@@ -215,9 +223,12 @@ function MainApp() {
   );
 
   return (
-    <View className="min-h-screen w-full bg-neutral-950 text-neutral-100 flex flex-col justify-between selection:bg-neutral-800 selection:text-neutral-100">
+    <View className="min-h-screen w-full bg-neutral-950 text-neutral-100 flex flex-col justify-between selection:bg-neutral-800 selection:text-neutral-100 relative overflow-x-hidden">
+      {/* Dynamic Cursor Gradient Pointer & Floating Aesthetic Shapes */}
+      <GradientPointerAndShapes />
+
       {/* 1. Header & Accessibility Bar */}
-      <View className="w-full shrink-0">
+      <View className="w-full shrink-0 relative z-10">
         <NetworkStatusBadge />
         <AccessibilityBar onToggleShortcutsModal={() => setIsShortcutsOpen(true)} />
 
@@ -249,12 +260,12 @@ function MainApp() {
       </View>
 
       {/* 2. Main Generation Focus View */}
-      <View className="w-full max-w-3xl mx-auto px-4 py-4 flex-1 flex-col items-center justify-center">
+      <View className="w-full max-w-3xl mx-auto px-4 py-4 flex-1 flex-col items-center justify-center relative z-10">
         {/* Minimalist Subculture Filters */}
         <VibeSelector
           selectedVibe={selectedVibe}
           onSelectVibe={(vibe) => setSelectedVibe(vibe)}
-          disabled={false}
+          disabled={isCycling}
         />
 
         {/* Central Handle Display Card */}
@@ -268,10 +279,10 @@ function MainApp() {
           />
         </View>
 
-        {/* Single-Click Cycling Control */}
+        {/* Single-Click Cycling Control with moving Cyclist loader */}
         <CycleButton
           onCycle={cycleHandle}
-          isLoading={false}
+          isLoading={isCycling}
           isOffline={false}
         />
 
@@ -284,7 +295,7 @@ function MainApp() {
       </View>
 
       {/* 3. Sleek Minimal Footer */}
-      <View className="w-full py-3 px-4 border-t border-neutral-900 bg-black/60 flex-row items-center justify-between text-xs font-mono text-neutral-400">
+      <View className="w-full py-3 px-4 border-t border-neutral-900 bg-black/60 flex-row items-center justify-between text-xs font-mono text-neutral-400 relative z-10">
         <View className="flex-row items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-neutral-600 shrink-0" />
           <Text baseSize={11} className="text-neutral-500">
