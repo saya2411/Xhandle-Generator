@@ -3,7 +3,6 @@ import { View } from "./native/View";
 import { Text } from "./native/Text";
 import { Pressable } from "./native/Pressable";
 import { HandleItem } from "../types";
-import { logger } from "../utils/logger";
 
 interface HandleCardProps {
   handle: HandleItem | null;
@@ -32,7 +31,6 @@ export const HandleCard: React.FC<HandleCardProps> = ({
     );
   }
 
-  // Ensure no underscores exist in display text
   const handleText = handle.text.replace(/_/g, "");
   const charCount = handleText.length;
   const isMaxLimit = charCount >= 15;
@@ -42,26 +40,20 @@ export const HandleCard: React.FC<HandleCardProps> = ({
       await navigator.clipboard.writeText(`@${handleText}`);
       onCopyHandle(`@${handleText}`);
       setLocalFeedback("COPIED");
-      logger.info(`Copied handle @${handleText} to clipboard`);
       setTimeout(() => setLocalFeedback(null), 2000);
-    } catch (err) {
-      logger.error(`Clipboard write failed for @${handleText}`, { error: String(err) });
+    } catch {
       setLocalFeedback("FAILED");
       setTimeout(() => setLocalFeedback(null), 2000);
     }
   };
 
   const handleDirectXLink = () => {
-    const url = `https://x.com/${encodeURIComponent(handleText)}`;
-    logger.info(`Opening direct profile check on X: ${url}`);
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(`https://x.com/${encodeURIComponent(handleText)}`, "_blank", "noopener,noreferrer");
   };
 
   const handleTweetIntent = () => {
     const text = encodeURIComponent(`claiming @${handleText}`);
-    const intentUrl = `https://x.com/intent/tweet?text=${text}`;
-    logger.info(`Opening Twitter intent for @${handleText}`);
-    window.open(intentUrl, "_blank", "noopener,noreferrer");
+    window.open(`https://x.com/intent/tweet?text=${text}`, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -115,7 +107,7 @@ export const HandleCard: React.FC<HandleCardProps> = ({
         </Text>
       </View>
 
-      {/* Action Toolbar - Words only, no icons */}
+      {/* Action Toolbar - Words only, clean & accessible */}
       <View className="pt-4 border-t border-neutral-900 flex-row flex-wrap items-center justify-between gap-2">
         {/* Primary copy and save actions */}
         <View className="flex-row items-center gap-2 flex-1 sm:flex-initial">

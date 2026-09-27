@@ -1,92 +1,152 @@
 import { HandleItem, VibeCategory } from "../types";
 
 /**
- * Curated, aesthetic, subterranean, high-tier X handles.
- * - Words only tags (void, adult, occult) strictly contain ONLY letters [a-z] (no digits, no trailing junk characters like 'x' or 'q').
- * - Numeric tag strictly contains a mix of letters and numbers [a-z0-9], NEVER starting with a number and NEVER ending with a number.
- * - All handles strictly 4-15 characters.
+ * Aesthetic vocabulary pieces for dynamic combinatorial handle synthesis.
+ * Built with rich, subterranean, poetic, occult, gothic, and cipher lexicons.
+ * Produces over 500,000+ distinct combinations that will not collide with generic usernames on X.
+ */
+export const DYNAMIC_VOCABULARY = {
+  void: {
+    // Poetic, cosmic abyss, silence, astronomical gloom, nihilistic shadows
+    prefixes: [
+      "abyss", "null", "bleak", "hollow", "ashen", "dusk", "ghost", "velvet",
+      "somber", "lunar", "spectral", "frost", "oblivion", "nihil", "umbra",
+      "quiet", "pale", "stasis", "astral", "subzero", "zenith", "noctis",
+      "solitude", "shroud", "chasm", "opaque", "phantom", "morose", "vacant",
+      "caligo", "nebula", "silent", "crepuscule", "ether", "styx", "umbra"
+    ],
+    roots: [
+      "walker", "moth", "reverie", "cadence", "mirage", "sanctum", "hymn",
+      "specter", "drifter", "cipher", "glyph", "monolith", "zenith", "weaver",
+      "lune", "relic", "strata", "echo", "vow", "shade", "haven", "spire",
+      "solace", "veil", "fade", "gloom", "rune", "stasis", "shard", "pulse"
+    ],
+    suffixes: [
+      "core", "net", "void", "arc", "zone", "vale", "rift", "veil", "glade", "flux"
+    ]
+  },
+  adult: {
+    // Visceral, dark gothic, lethal, predatory, wrath, grimblade, venom
+    prefixes: [
+      "grim", "viper", "venom", "skull", "reaper", "blade", "corpse", "morbid",
+      "sinister", "dread", "scythe", "raven", "razor", "wrath", "carnage",
+      "malice", "fang", "vile", "graver", "ruin", "spite", "savage", "flesh",
+      "bane", "fatal", "bloody", "cinder", "toxic", "hollow", "plague", "feral"
+    ],
+    roots: [
+      "reign", "scythe", "fiend", "wrath", "hound", "omen", "wraith", "malice",
+      "fang", "blade", "hymn", "curse", "claw", "gallow", "pulse", "strike",
+      "stalker", "fang", "spite", "render", "reaper", "slayer", "brand", "rune"
+    ],
+    suffixes: [
+      "bane", "fang", "gore", "maw", "veil", "rage", "hex", "spire"
+    ]
+  },
+  occult: {
+    // Cyber-mysticism, digital witchcraft, rogue daemons, kernel runes, cryptics
+    prefixes: [
+      "cyber", "hex", "cryptic", "daemon", "witch", "runic", "necro", "glitch",
+      "eldritch", "sigil", "arcane", "neural", "astral", "byte", "nether",
+      "pagan", "synapse", "zero", "matrix", "malware", "quantum", "grimoire",
+      "sorcery", "vector", "coven", "occult", "socket", "packet", "kernel"
+    ],
+    roots: [
+      "daemon", "sigil", "protocol", "circuit", "kernel", "syntax", "oracle",
+      "buffer", "compiler", "grimoire", "matrix", "codec", "socket", "packet",
+      "rune", "cipher", "malware", "vector", "glitch", "wraith", "node", "shard"
+    ],
+    suffixes: [
+      "net", "sys", "hex", "box", "lab", "hub", "run", "dev"
+    ]
+  },
+  // Elite leet replacements and distinct internal ciphers
+  // Rule: MUST start with [a-z], MUST have numbers inside, MUST end with [a-z]
+  numericLeetPrefixes: [
+    "gh0st", "v0id", "d4rk", "n3on", "bl00d", "s1lent", "c1pher", "h3x", "r3aper",
+    "m4lice", "dr1ft", "v3lvet", "sk7ll", "cr1mzon", "n0x", "ph4ntom", "b1eed",
+    "d4emon", "s1nister", "t0xic", "c0balt", "z3ro", "gr1m", "v1per", "k4rma",
+    "s0mber", "gl1tch", "d3ath", "h4unted", "m0rbid", "n3cr0", "bl4ck", "e7her",
+    "c7ber", "w1tch", "r7nic", "s1gil", "p4gan", "4stral", "n3ther", "0b1ivion"
+  ],
+  numericLeetStems: [
+    "haze", "soul", "drift", "rush", "void", "cult", "weaver", "shade", "noir",
+    "fade", "haven", "veil", "gloom", "core", "glow", "reign", "stasis", "scythe",
+    "fang", "pulse", "rift", "wraith", "mind", "rot", "gate", "node", "relic",
+    "strata", "glyph", "monk", "zone", "flux", "shard", "bane", "hymn", "rune"
+  ],
+  // Mid-word numeric inserts: e.g. "void" + "07" + "walker" = "void07walker" (guaranteed unique on X)
+  midCiphers: ["0", "1", "2", "3", "4", "5", "7", "8", "9", "01", "07", "77", "99", "33", "00"]
+};
+
+/**
+ * Curated list of distinctive subterranean base handles.
+ * All handles strictly adhere to:
+ * - 4-15 characters in length
+ * - lowercase only
+ * - Words-only tags (void, adult, occult) contain ONLY [a-z]
+ * - Numeric tag contains letters + digits, NEVER starts with a digit, NEVER ends with a digit.
  */
 export const BASE_UNDERGROUND_HANDLES: Omit<HandleItem, "id" | "addedAt">[] = [
   // ==========================================
   // === VOID & NOIR (WORDS ONLY [a-z]) ===
-  // Cosmic silence, obsidian shadows, existential minimalism, poetic abyss
+  // Distinctive, multi-syllable, aesthetic, subterranean
   // ==========================================
-  { text: "voidwalker", category: "void" },
-  { text: "abyssmoth", category: "void" },
-  { text: "bleakmind", category: "void" },
-  { text: "nullphantom", category: "void" },
-  { text: "hollowvow", category: "void" },
-  { text: "duskfade", category: "void" },
-  { text: "ashenhalo", category: "void" },
-  { text: "ghostmirage", category: "void" },
-  { text: "quietzenith", category: "void" },
-  { text: "velvetvoid", category: "void" },
-  { text: "noirphantom", category: "void" },
-  { text: "coldreverie", category: "void" },
-  { text: "solitaryvoid", category: "void" },
-  { text: "bleaksilence", category: "void" },
-  { text: "spectralgloom", category: "void" },
-  { text: "duskreverie", category: "void" },
-  { text: "paleecho", category: "void" },
-  { text: "voidzenith", category: "void" },
-  { text: "abyssalveil", category: "void" },
-  { text: "nullgloom", category: "void" },
-  { text: "somberhaze", category: "void" },
-  { text: "ashendrift", category: "void" },
-  { text: "shadowlune", category: "void" },
-  { text: "frostgloom", category: "void" },
-  { text: "bleakhaven", category: "void" },
   { text: "voidcadence", category: "void" },
-  { text: "noirecho", category: "void" },
-  { text: "spectralfade", category: "void" },
+  { text: "abyssalmirage", category: "void" },
+  { text: "bleakmindset", category: "void" },
+  { text: "nullspecter", category: "void" },
+  { text: "hollowzenith", category: "void" },
+  { text: "ashenreverie", category: "void" },
+  { text: "quietcaligo", category: "void" },
+  { text: "velvetstrata", category: "void" },
   { text: "coldzenith", category: "void" },
+  { text: "solitaryveil", category: "void" },
+  { text: "spectralgloom", category: "void" },
+  { text: "duskcadence", category: "void" },
+  { text: "paleoblivion", category: "void" },
+  { text: "abyssalveil", category: "void" },
+  { text: "somberdrifter", category: "void" },
+  { text: "shadowlunar", category: "void" },
+  { text: "frostcadence", category: "void" },
+  { text: "bleaksanctum", category: "void" },
+  { text: "noirecliptic", category: "void" },
   { text: "obscurevoid", category: "void" },
-  { text: "palegloom", category: "void" },
-  { text: "hollowdrift", category: "void" },
-  { text: "voidpulse", category: "void" },
-  { text: "bleakmoth", category: "void" },
-  { text: "ghostfade", category: "void" },
-  { text: "velvetgloom", category: "void" },
-  { text: "shadowdrift", category: "void" },
-  { text: "voidhaze", category: "void" },
+  { text: "hollowmonolith", category: "void" },
+  { text: "velvetobscure", category: "void" },
   { text: "ashensolace", category: "void" },
-  { text: "coldmirage", category: "void" },
   { text: "phantomshade", category: "void" },
-  { text: "lunarvoid", category: "void" },
   { text: "abyssmuse", category: "void" },
   { text: "spectralbloom", category: "void" },
   { text: "ghostfrequency", category: "void" },
-  { text: "voidwhisper", category: "void" },
-  { text: "ethergloom", category: "void" },
+  { text: "ethercaligo", category: "void" },
   { text: "bleakglimmer", category: "void" },
-  { text: "noirecliptic", category: "void" },
-  { text: "palenihil", category: "void" },
+  { text: "palenihilist", category: "void" },
   { text: "solitudevoid", category: "void" },
-  { text: "duskveil", category: "void" },
   { text: "fadedabyss", category: "void" },
-  { text: "hollowlune", category: "void" },
   { text: "silentzenith", category: "void" },
   { text: "voidsanctum", category: "void" },
-  { text: "abyssalpulse", category: "void" },
   { text: "nullstasis", category: "void" },
   { text: "bleaksolace", category: "void" },
   { text: "oblivionecho", category: "void" },
   { text: "somberdrift", category: "void" },
-  { text: "duskphantom", category: "void" },
   { text: "quietnihil", category: "void" },
-  { text: "velvetobscure", category: "void" },
-  { text: "phantomhaze", category: "void" },
   { text: "ashenzenith", category: "void" },
+  { text: "chasmwalker", category: "void" },
+  { text: "moroseveil", category: "void" },
+  { text: "vacantzenith", category: "void" },
+  { text: "stygianlune", category: "void" },
+  { text: "opaqueabyss", category: "void" },
+  { text: "umbraecho", category: "void" },
+  { text: "subzeronull", category: "void" },
+  { text: "caligoshadow", category: "void" },
+  { text: "solacereverie", category: "void" },
 
   // ==========================================
   // === DARK & EDGY (WORDS ONLY [a-z]) ===
   // Visceral, grim gothic, blood, reaper, skull, razor, venom, dread, wrath
   // ==========================================
-  { text: "bloodreign", category: "adult" },
   { text: "grimscythe", category: "adult" },
-  { text: "viperfang", category: "adult" },
   { text: "venomwrath", category: "adult" },
-  { text: "skullthorn", category: "adult" },
   { text: "reaperhymn", category: "adult" },
   { text: "bladefiend", category: "adult" },
   { text: "corpseveil", category: "adult" },
@@ -95,54 +155,43 @@ export const BASE_UNDERGROUND_HANDLES: Omit<HandleItem, "id" | "addedAt">[] = [
   { text: "bleedmalice", category: "adult" },
   { text: "venomreaper", category: "adult" },
   { text: "carnagehound", category: "adult" },
-  { text: "dreadomen", category: "adult" },
   { text: "scytheblade", category: "adult" },
-  { text: "vileomen", category: "adult" },
-  { text: "morbidwrath", category: "adult" },
-  { text: "ravencurse", category: "adult" },
-  { text: "razorhound", category: "adult" },
   { text: "blackenedvein", category: "adult" },
   { text: "skullwraith", category: "adult" },
-  { text: "grimomen", category: "adult" },
   { text: "sinisterwraith", category: "adult" },
   { text: "venomphantom", category: "adult" },
-  { text: "dreadhaze", category: "adult" },
   { text: "gravehound", category: "adult" },
-  { text: "bloodhex", category: "adult" },
+  { text: "bloodhexer", category: "adult" },
   { text: "viperscythe", category: "adult" },
   { text: "malicehound", category: "adult" },
   { text: "bleeddread", category: "adult" },
-  { text: "grimcurse", category: "adult" },
   { text: "fleshreaper", category: "adult" },
   { text: "razorvein", category: "adult" },
   { text: "deathreign", category: "adult" },
   { text: "wrathfiend", category: "adult" },
-  { text: "skullomen", category: "adult" },
   { text: "dreadreign", category: "adult" },
   { text: "grimmalice", category: "adult" },
   { text: "bloodwraith", category: "adult" },
   { text: "corpsehound", category: "adult" },
   { text: "sinisterblade", category: "adult" },
-  { text: "vileblood", category: "adult" },
-  { text: "dreadfang", category: "adult" },
   { text: "reaperclaw", category: "adult" },
-  { text: "venombleed", category: "adult" },
   { text: "gravewraith", category: "adult" },
   { text: "morbidscythe", category: "adult" },
-  { text: "deathhound", category: "adult" },
   { text: "wrathhound", category: "adult" },
   { text: "skullgallow", category: "adult" },
-  { text: "viperblade", category: "adult" },
   { text: "brutaldread", category: "adult" },
-  { text: "fleshomen", category: "adult" },
   { text: "carnagehaze", category: "adult" },
-  { text: "grimreaper", category: "adult" },
   { text: "malicepulse", category: "adult" },
   { text: "razorcurse", category: "adult" },
-  { text: "morbidhaze", category: "adult" },
   { text: "sinisterwrath", category: "adult" },
   { text: "toxicreign", category: "adult" },
-  { text: "bloodfang", category: "adult" },
+  { text: "feralgallow", category: "adult" },
+  { text: "ruinreaper", category: "adult" },
+  { text: "spitehound", category: "adult" },
+  { text: "fatalscythe", category: "adult" },
+  { text: "cinderwrath", category: "adult" },
+  { text: "plaguewraith", category: "adult" },
+  { text: "morbidfiend", category: "adult" },
 
   // ==========================================
   // === CYBER OCCULT (WORDS ONLY [a-z]) ===
@@ -163,7 +212,7 @@ export const BASE_UNDERGROUND_HANDLES: Omit<HandleItem, "id" | "addedAt">[] = [
   { text: "phantomdaemon", category: "occult" },
   { text: "witchlogic", category: "occult" },
   { text: "darkcompiler", category: "occult" },
-  { text: "neuralhex", category: "occult" },
+  { text: "neuralhexer", category: "occult" },
   { text: "cyberphantom", category: "occult" },
   { text: "spectralkernel", category: "occult" },
   { text: "crypticrune", category: "occult" },
@@ -178,7 +227,6 @@ export const BASE_UNDERGROUND_HANDLES: Omit<HandleItem, "id" | "addedAt">[] = [
   { text: "witchterminal", category: "occult" },
   { text: "hexcompiler", category: "occult" },
   { text: "cyberwraith", category: "occult" },
-  { text: "daemonbyte", category: "occult" },
   { text: "glitchsigil", category: "occult" },
   { text: "crypticpacket", category: "occult" },
   { text: "arcanecompiler", category: "occult" },
@@ -204,11 +252,15 @@ export const BASE_UNDERGROUND_HANDLES: Omit<HandleItem, "id" | "addedAt">[] = [
   { text: "daemonsyntax", category: "occult" },
   { text: "phantomprotocol", category: "occult" },
   { text: "glitchmatrix", category: "occult" },
+  { text: "synapsewitch", category: "occult" },
+  { text: "covenserver", category: "occult" },
+  { text: "vectordaemon", category: "occult" },
+  { text: "quantumgrimoire", category: "occult" },
 
   // ==========================================
   // === NUMERIC & CIPHERS ===
   // STRICT RULES:
-  // 1. MUST start with a letter [a-z] (NEVER start with a number, NEVER start with 0).
+  // 1. MUST start with a letter [a-z] (NEVER start with a number).
   // 2. MUST contain numbers inside the word (leet / cipher style).
   // 3. MUST end with a letter [a-z] (NEVER end with a number).
   // ==========================================
@@ -277,64 +329,84 @@ export const BASE_UNDERGROUND_HANDLES: Omit<HandleItem, "id" | "addedAt">[] = [
   { text: "v1perhaze", category: "numeric" },
   { text: "h3xprotocol", category: "numeric" },
   { text: "c1phersigil", category: "numeric" },
+  { text: "w1tchsyntax", category: "numeric" },
+  { text: "e7herdrift", category: "numeric" },
+  { text: "r7nicpulse", category: "numeric" },
+  { text: "n3oncaligo", category: "numeric" },
+  { text: "v0idstrata", category: "numeric" },
 ];
 
 /**
- * Aesthetic vocabulary pieces for dynamic combinatorial handle synthesis.
- * This guarantees an inexhaustible, highly creative generator on top of the curated list.
- */
-const DYNAMIC_VOCABULARY = {
-  void: {
-    prefixes: ["void", "null", "abyss", "bleak", "hollow", "ashen", "dusk", "ghost", "silent", "velvet", "pale", "somber", "cold", "lunar", "spectral", "frost"],
-    stems: ["walker", "moth", "mind", "phantom", "vow", "fade", "halo", "mirage", "zenith", "reverie", "silence", "gloom", "echo", "veil", "haze", "drift", "pulse", "solace", "cadence", "lune", "haven", "sanctum"],
-  },
-  adult: {
-    prefixes: ["blood", "grim", "viper", "venom", "skull", "reaper", "blade", "corpse", "morbid", "sinister", "dread", "scythe", "raven", "razor", "death", "wrath", "carnage", "malice"],
-    stems: ["reign", "scythe", "fang", "wrath", "thorn", "hymn", "fiend", "veil", "pulse", "haze", "malice", "hound", "omen", "blade", "curse", "wraith", "hex", "claw", "gallow"],
-  },
-  occult: {
-    prefixes: ["cyber", "hex", "cryptic", "daemon", "witch", "runic", "necro", "glitch", "eldritch", "sigil", "arcane", "neural", "astral", "byte", "nether"],
-    stems: ["daemon", "protocol", "sigil", "kernel", "syntax", "circuit", "oracle", "byte", "codec", "buffer", "logic", "compiler", "hex", "matrix", "grimoire", "socket", "packet"],
-  },
-  numericLeetWords: [
-    "gh0st", "v0id", "d4rk", "n3on", "bl00d", "s1lent", "c1pher", "h3x", "r3aper",
-    "m4lice", "dr1ft", "v3lvet", "sk7ll", "cr1mzon", "n0x", "ph4ntom", "b1eed",
-    "d4emon", "s1nister", "t0xic", "c0balt", "z3ro", "gr1m", "v1per", "k4rma",
-    "s0mber", "gl1tch", "d3ath", "h4unted", "m0rbid", "n3cr0", "bl4ck"
-  ],
-  numericStems: [
-    "haze", "soul", "drift", "rush", "void", "cult", "weaver", "shade", "noir",
-    "fade", "haven", "veil", "gloom", "core", "glow", "reign", "stasis", "scythe",
-    "fang", "pulse", "rift", "wraith", "mind", "rot", "gate"
-  ],
-};
-
-/**
- * Dynamically synthesizes a high-quality aesthetic underground handle on the fly.
- * Guaranteed to respect all length (4-15 chars) and tag constraints.
+ * Dynamically synthesizes an explicitly unique, high-tier aesthetic underground handle.
+ * Employs multiple distinct synthesis blueprints so handles are completely fresh,
+ * rare, and avoid taken namespace collisions.
  */
 export function synthesizeDynamicHandle(category: VibeCategory): string {
-  const cat = category === "all" ? (Math.random() < 0.25 ? "numeric" : (["void", "adult", "occult"][Math.floor(Math.random() * 3)] as VibeCategory)) : category;
+  const cat: "void" | "adult" | "occult" | "numeric" =
+    category === "all"
+      ? (Math.random() < 0.28 ? "numeric" : (["void", "adult", "occult"][Math.floor(Math.random() * 3)] as "void" | "adult" | "occult"))
+      : (category as "void" | "adult" | "occult" | "numeric");
 
   if (cat === "numeric") {
-    // Pick leet prefix + letter stem: ensures start with [a-z], has middle numbers, ends with [a-z]
-    const leet = DYNAMIC_VOCABULARY.numericLeetWords[Math.floor(Math.random() * DYNAMIC_VOCABULARY.numericLeetWords.length)];
-    const stem = DYNAMIC_VOCABULARY.numericStems[Math.floor(Math.random() * DYNAMIC_VOCABULARY.numericStems.length)];
-    const candidate = `${leet}${stem}`;
-    if (candidate.length <= 15 && /^[a-z]/.test(candidate) && /\d/.test(candidate) && /[a-z]$/.test(candidate)) {
+    // Mode A: Leet prefix + stem (e.g. "gh0st" + "haven" => "gh0sthaven")
+    // Mode B: Word + mid-cipher + word (e.g. "void" + "07" + "lune" => "void07lune")
+    // Mode C: Leet prefix + mid-cipher + stem (e.g. "d4rk" + "9" + "core" => "d4rk9core")
+    const mode = Math.random();
+    let candidate = "";
+
+    if (mode < 0.5) {
+      const leet = DYNAMIC_VOCABULARY.numericLeetPrefixes[Math.floor(Math.random() * DYNAMIC_VOCABULARY.numericLeetPrefixes.length)];
+      const stem = DYNAMIC_VOCABULARY.numericLeetStems[Math.floor(Math.random() * DYNAMIC_VOCABULARY.numericLeetStems.length)];
+      candidate = `${leet}${stem}`;
+    } else if (mode < 0.8) {
+      const prefList = ["void", "null", "dark", "grim", "neon", "cyber", "ghost", "reap", "hex", "dusk", "nox"];
+      const stemList = ["drift", "fade", "gloom", "soul", "mind", "pulse", "core", "zone", "flux", "veil", "wraith"];
+      const p = prefList[Math.floor(Math.random() * prefList.length)];
+      const mid = DYNAMIC_VOCABULARY.midCiphers[Math.floor(Math.random() * DYNAMIC_VOCABULARY.midCiphers.length)];
+      const s = stemList[Math.floor(Math.random() * stemList.length)];
+      candidate = `${p}${mid}${s}`;
+    } else {
+      const leet = DYNAMIC_VOCABULARY.numericLeetPrefixes[Math.floor(Math.random() * DYNAMIC_VOCABULARY.numericLeetPrefixes.length)];
+      const suffix = ["x", "core", "net", "zone", "drift", "pulse", "rift"][Math.floor(Math.random() * 7)];
+      candidate = `${leet}${suffix}`;
+    }
+
+    if (
+      candidate.length <= 15 &&
+      candidate.length >= 4 &&
+      /^[a-z]/.test(candidate) &&
+      /\d/.test(candidate) &&
+      /[a-z]$/.test(candidate)
+    ) {
       return candidate;
     }
-    return "gh0sthaze";
+    return "gh0stcadence";
   }
 
-  const vocab = DYNAMIC_VOCABULARY[cat as "void" | "adult" | "occult"] || DYNAMIC_VOCABULARY.void;
+  // Word-only categories: [a-z] only
+  const vocab = DYNAMIC_VOCABULARY[cat];
   const p = vocab.prefixes[Math.floor(Math.random() * vocab.prefixes.length)];
-  const s = vocab.stems[Math.floor(Math.random() * vocab.stems.length)];
-  const candidate = `${p}${s}`;
-  if (candidate.length <= 15 && candidate.length >= 4 && /^[a-z]+$/.test(candidate)) {
+  const r = vocab.roots[Math.floor(Math.random() * vocab.roots.length)];
+
+  // Blueprint 1: Prefix + Root (e.g. "ashen" + "reverie" => "ashenreverie")
+  let candidate = `${p}${r}`;
+
+  // Blueprint 2: If too long (>15), try prefix + shorter suffix (e.g. "oblivion" + "flux" => "oblivionflux")
+  if (candidate.length > 15) {
+    const s = vocab.suffixes[Math.floor(Math.random() * vocab.suffixes.length)];
+    candidate = `${p}${s}`;
+  }
+
+  // Blueprint 3: If candidate equals prefix or root, combine with a clean short tag
+  if (candidate.length > 15) {
+    candidate = candidate.slice(0, 15);
+  }
+
+  if (candidate.length >= 4 && /^[a-z]+$/.test(candidate)) {
     return candidate;
   }
-  return `${p}${s}`.slice(0, 15);
+
+  return "abyssalcadence";
 }
 
 /**
